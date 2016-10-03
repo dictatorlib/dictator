@@ -50,8 +50,11 @@ For the moment it handles not all features of Python Dict but basics:
 * `.delete(key)`
 
     ```python
-    >>> dc.pop('Comets', 'No data')
-    'No data'
+    >>> dc.delete('Comets')
+    ```
+    or
+    ```python
+    >>> del dc['Comets']
     ```
 
 * `.keys()` and `.values()`
