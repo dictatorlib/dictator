@@ -5,6 +5,8 @@ Dictator is a tiny library for Robots™ to work with Redis as a Dict.
 It handles Redis API commands and represent itself as a dict-like object.
 
 
+### Usage
+
 It's easy to start by creating `Dictator` object
 
     dc = Dictator(host='localhost', port=6379, db=0)
@@ -72,7 +74,7 @@ For the moment it handles not all features of Python Dict but basics:
     * `.itervalues()`
     * `.iteritems()`
     
-* and of course 'len()'
+* and of course `len()`
 
     ```
     >>> len(dc)
