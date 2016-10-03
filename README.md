@@ -9,20 +9,22 @@ It handles Redis API commands and represent itself as a dict-like object.
 
 It's easy to start by creating `Dictator` object
 
-    dc = Dictator(host='localhost', port=6379, db=0)
-    
+```python
+>>> dc = Dictator(host='localhost', port=6379, db=0)
+```
+
 For the moment it handles not all features of Python Dict but basics:
 
 * `.set(key, value)`
 
-    ```
+    ```python
     >>> dc.set('Planets', ['Mercury', 'Venus', 'Earth'])
     >>> dc['Stars'] = ['Sun'] 
     ```
 
 * `.get(key)`
 
-    ```
+    ```python
     >>> dc['Stars']
     ['Sun']
     >>> dc.get('Planets')
@@ -31,14 +33,14 @@ For the moment it handles not all features of Python Dict but basics:
     
     You can set default value for `get()` function just like for a `dict`-object:
     
-    ```
+    ```python
     >>> dc.get('Comets', 'No data')
     'No data'
     ```
 
 * `.pop(key, default=None)`
     
-    ```
+    ```python
     >>> dc.pop('Stars')
     ['Sun']
     >>> dc.pop('Comets')
@@ -47,14 +49,14 @@ For the moment it handles not all features of Python Dict but basics:
     
 * `.delete(key)`
 
-    ```
+    ```python
     >>> dc.pop('Comets', 'No data')
     'No data'
     ```
 
 * `.keys()` and `.values()`
 
-    ```
+    ```python
     >>> dc.keys()
     ['Planets', 'Stars']
     >>> dc.values()
@@ -63,7 +65,7 @@ For the moment it handles not all features of Python Dict but basics:
         
 * `.items()`
 
-    ```
+    ```python
     >>> dc.iterms()
     [('Planets', ['Mercury', 'Venus', 'Earth'])]
     ```
@@ -76,7 +78,7 @@ For the moment it handles not all features of Python Dict but basics:
     
 * and of course `len()`
 
-    ```
+    ```python
     >>> len(dc)
     2
     ```
