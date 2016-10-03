@@ -1,6 +1,9 @@
 # Dictator
 
-Dictator is an experimental Python library aimed to make work with Redis DB transparent as a simple dict object.
+Dictator is a tiny library for Robots™ to work with Redis as a Dict.
+
+It handles Redis API commands and represent itself as a dict-like object.
+
 
 It's easy to start by creating `Dictator` object
 

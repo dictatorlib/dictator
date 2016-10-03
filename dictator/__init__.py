@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Dictator is a tiny library made for Robots™
+Dictator is a tiny library for Robots™ to work with Redis as a Dict.
 
 Dictator handles Redis command to make work with database as a dict-like object.
 
