@@ -102,6 +102,20 @@ class Dictator(object):
         """
         return self.iterkeys()
 
+    def __contains__(self, item):
+        """Return a boolean indicating whether key ``item`` exists
+
+        >>> dc = Dictator()
+        >>> 'theKey' in dc
+        False
+
+        :param item: item name
+        :type item: str
+        :return: True if exists or False in other case
+        :rtype: bool
+        """
+        return self._redis.exists(item)
+
     def __len__(self):
         """Return number of items in db
 
