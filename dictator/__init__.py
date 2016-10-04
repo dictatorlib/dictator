@@ -172,6 +172,13 @@ class Dictator(object):
         """
         return self.__getitem__(key) or default
 
+    def clear(self):
+        """Remove all items in current db.
+
+        :return:
+        """
+        return self._redis.flushdb()
+
     def pop(self, key, default=None):
         """Remove and return the last item of the list ``key``. If key doesn't exists it return ``default``.
 
