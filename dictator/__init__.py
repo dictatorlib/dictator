@@ -63,8 +63,9 @@ class Dictator(object):
     def __getitem__(self, item):
         """Return the value at key ``item`` or None if item doesn't exists
 
-        :param item:
-        :return:
+        :param item: item name
+        :type item: str
+        :return: value of item with given name
         """
         logger.debug('call __getattr__ %s', item)
         key_type = self._redis.type(item)
@@ -82,8 +83,10 @@ class Dictator(object):
     def __setitem__(self, key, value):
         """Set the value at key ``key`` to ``value``
 
-        :param key:
-        :param value:
+        :param key: item name
+        :type key: str
+        :param value: item value
+        :type value: Any
         :return:
         """
         logger.debug('call __setattr__ %s', key)
@@ -166,7 +169,7 @@ class Dictator(object):
 
         :param key: key of value to return
         :type key: str
-        :param default:
+        :param default: value of any type to return of key doesn't exist.
         :type default: Any
         :return: value of given key
         """
