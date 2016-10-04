@@ -175,7 +175,15 @@ class Dictator(object):
     def clear(self):
         """Remove all items in current db.
 
-        :return:
+        >>> dc = Dictator()
+        >>> dc['Stars'] = ['Sun', 'Vega']
+        >>> len(dc)
+        1
+        >>> dc.clear()
+        True
+        >>> len(dc)
+        0
+
         """
         return self._redis.flushdb()
 
@@ -189,9 +197,12 @@ class Dictator(object):
         >>> dc.pop('l1', 'empty')
         'empty'
 
-        :param key:
-        :param default:
-        :return:
+        :param key: key name to pop
+        :type key: str
+        :param default: default value if key doesn't exist
+        :type default: Any
+        :return: value associated with given key or None or ``default``
+        :rtype: Any
         """
         value = self.get(key, default)
         self._redis.delete(key)
