@@ -4,6 +4,11 @@ Dictator is a tiny library for Robots™ to work with Redis as a Dict.
 
 It handles Redis API commands and represent itself as a dict-like object.
 
+### Install
+
+```bash
+$ pip install dictator
+```
 
 ### Usage
 
@@ -79,9 +84,4 @@ For the moment it handles not all features of Python Dict but basics:
     * `.itervalues()`
     * `.iteritems()`
     
-* and of course `len()`
-
-    ```python
-    >>> len(dc)
-    2
-    ```
+* and a bit more: `len(obj)`, `clear()`, 
