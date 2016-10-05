@@ -1,6 +1,3 @@
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/81816e720b7b48cd8ab217383051dfd5)](https://www.codacy.com/app/meamka/dictator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amka/dictator&amp;utm_campaign=Badge_Grade)
-
-
 # Dictator
 
 Dictator is a tiny library for Robots™ to work with Redis as a Dict.
@@ -45,7 +42,14 @@ For the moment it handles not all features of Python Dict but basics:
     >>> dc.get('Comets', 'No data')
     'No data'
     ```
+* `.update(other=None, **kwargs)`
 
+    ```python
+    >>> dc.update({'Stars': ['Sun', 'Vega']})
+    >>> dc.update(Stars=['Sun'])
+    
+    ```
+    
 * `.pop(key, default=None)`
     
     ```python
@@ -87,4 +91,4 @@ For the moment it handles not all features of Python Dict but basics:
     * `.itervalues()`
     * `.iteritems()`
     
-* and a bit more: `len(obj)`, `clear()`, 
+* and more 
