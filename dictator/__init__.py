@@ -40,7 +40,7 @@ class Dictator(object):
         1
         >>> dct['key']
         'the Value'
-        >>> del dct['key']
+        >>> dct.clear()
 
     """
 
@@ -147,8 +147,7 @@ class Dictator(object):
         >>> dc.set('l0', ['abc', 123])
         >>> dc['l0']
         ['abc', '123']
-        >>> del dc['s0']
-        >>> del dc['l0']
+        >>> dc.clear()
 
         :param key: hashable value
         :param value:
@@ -165,7 +164,7 @@ class Dictator(object):
         ['1', '2', '3', '4']
         >>> dc['l0']
         ['1', '2', '3', '4']
-        >>> del dc['l0']
+        >>> dc.clear()
 
         :param key: key of value to return
         :type key: str
@@ -183,12 +182,11 @@ class Dictator(object):
         >>> len(dc)
         1
         >>> dc.clear()
-        True
         >>> len(dc)
         0
 
         """
-        return self._redis.flushdb()
+        self._redis.flushdb()
 
     def pop(self, key, default=None):
         """Remove and return the last item of the list ``key``. If key doesn't exists it return ``default``.
@@ -221,8 +219,7 @@ class Dictator(object):
         ['l0', 's0']
         >>> dc.keys('h*')
         []
-        >>> del dc['l0']
-        >>> del dc['s0']
+        >>> dc.clear()
 
         :param pattern: key pattern
         :type pattern: str
@@ -241,7 +238,7 @@ class Dictator(object):
         >>> dc['l0'] = [1, 2, 3, 4]
         >>> dc.items()
         [('l0', ['1', '2', '3', '4'])]
-        >>> del dc['l0']
+        >>> dc.clear()
 
         :return: list of tuple
         """
@@ -254,7 +251,7 @@ class Dictator(object):
         >>> dc['l0'] = [1, 2, 3, 4]
         >>> dc.items()
         [('l0', ['1', '2', '3', '4'])]
-        >>> del dc['l0']
+        >>> dc.clear()
 
         :return: list of tuple
 
@@ -276,9 +273,7 @@ class Dictator(object):
         <type 'generator'>
         >>> list(reversed([item for item in itr]))
         ['1', '2', '3']
-        >>> del dc['1']
-        >>> del dc['2']
-        >>> del dc['3']
+        >>> dc.clear()
 
         :param match: pattern to filter keys
         :type match: str
@@ -297,6 +292,16 @@ class Dictator(object):
         ``match`` allows for filtering the keys by pattern.
         ``count`` allows for hint the minimum number of returns.
 
+        >>> dc = Dictator()
+        >>> dc['1'] = 'abc'
+        >>> dc['2'] = 'def'
+        >>> dc['3'] = 'ghi'
+        >>> itr = dc.iteritems()
+        >>> type(itr)
+        <type 'generator'>
+        >>> list(reversed([item for item in itr]))
+        [('1', 'abc'), ('2', 'def'), ('3', 'ghi')]
+        >>> dc.clear()
 
         :param match: pattern to filter keys
         :type match: str
@@ -309,3 +314,34 @@ class Dictator(object):
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
             yield key, self.get(key)
+
+    def update(self, other=None, **kwargs):
+        """D.update([other, ]**kwargs) -> None.  Update D From dict/iterable ``other`` and ``kwargs``.
+        If ``other`` present and has a .keys() method, does:     for k in other: D[k] = other[k]
+        If ``other`` present and lacks .keys() method, does:     for (k, v) in other: D[k] = v
+        In either case, this is followed by: for k in kwargs: D[k] = kwargs[k]
+
+        >>> dc = Dictator()
+        >>> dc['1'] = 'abc'
+        >>> dc['2'] = 'def'
+        >>> dc.values()
+        ['def', 'abc']
+        >>> dc.update({'3': 'ghi'}, name='Keys')
+        >>> dc.values()
+        ['Keys', 'ghi', 'def', 'abc']
+        >>> dc.clear()
+
+        :param other: dict/iterable with .keys() function.
+        :param kwargs: key/value pairs
+        """
+        if other:
+            if hasattr(other, 'keys'):
+                for key in other.keys():
+                    self.set(key, other[key])
+            else:
+                for (key, value) in other:
+                    self.set(key, value)
+
+        if kwargs:
+            for key, value in kwargs.iteritems():
+                self.set(key, value)
