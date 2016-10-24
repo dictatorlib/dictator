@@ -2,7 +2,8 @@
 """
 Dictator is a tiny library for Robots™ to work with Redis as a Dict.
 
-Dictator handles Redis command to make work with database as a dict-like object.
+Dictator handles Redis command to make work with
+database as a dict-like object.
 
 .. codeauthor:: Andrey Maksimov <meamka@ya.ru>
 
@@ -25,6 +26,7 @@ Usage example:
 import logging
 
 import redis
+import six
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +158,8 @@ class Dictator(object):
         self.__setitem__(key, value)
 
     def get(self, key, default=None):
-        """Return the value at key ``key``, or default value ``default`` which is None by default.
+        """Return the value at key ``key``, or default value ``default``
+        which is None by default.
 
         >>> dc = Dictator()
         >>> dc['l0'] = [1, 2, 3, 4]
@@ -189,7 +192,8 @@ class Dictator(object):
         self._redis.flushdb()
 
     def pop(self, key, default=None):
-        """Remove and return the last item of the list ``key``. If key doesn't exists it return ``default``.
+        """Remove and return the last item of the list ``key``.
+        If key doesn't exists it return ``default``.
 
         >>> dc = Dictator()
         >>> dc['l0'] = [1, 2, 3, 4]
@@ -210,7 +214,8 @@ class Dictator(object):
         return value
 
     def keys(self, pattern=None):
-        """Returns a list of keys matching ``pattern``. By default return all keys.
+        """Returns a list of keys matching ``pattern``.
+        By default return all keys.
 
         >>> dc = Dictator()
         >>> dc['l0'] = [1, 2, 3, 4]
@@ -316,9 +321,12 @@ class Dictator(object):
             yield key, self.get(key)
 
     def update(self, other=None, **kwargs):
-        """D.update([other, ]**kwargs) -> None.  Update D From dict/iterable ``other`` and ``kwargs``.
-        If ``other`` present and has a .keys() method, does:     for k in other: D[k] = other[k]
-        If ``other`` present and lacks .keys() method, does:     for (k, v) in other: D[k] = v
+        """D.update([other, ]**kwargs) -> None.
+        Update D From dict/iterable ``other`` and ``kwargs``.
+        If ``other`` present and has a .keys() method, does:
+            for k in other: D[k] = other[k]
+        If ``other`` present and lacks .keys() method, does:
+            for (k, v) in other: D[k] = v
         In either case, this is followed by: for k in kwargs: D[k] = kwargs[k]
 
         >>> dc = Dictator()
@@ -343,5 +351,5 @@ class Dictator(object):
                     self.set(key, value)
 
         if kwargs:
-            for key, value in kwargs.iteritems():
+            for key, value in six.iteritems(kwargs):
                 self.set(key, value)
