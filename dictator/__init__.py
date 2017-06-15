@@ -84,8 +84,7 @@ class Dictator(object):
             return self._redis.smembers(item)
         elif str(key_type) == 'zset':
             return self._redis.zrange(item, 0, -1)
-        else:
-            return self._redis.get(item)
+        return self._redis.get(item)
 
     def __setitem__(self, key, value):
         """Set the value at key ``key`` to ``value``
@@ -182,7 +181,10 @@ class Dictator(object):
         :type default: Any
         :return: value of given key
         """
-        return self.__getitem__(key) or default
+        value = self.__getitem__(key) or default
+        if isinstance(value, bytes):
+            value = value.decode()
+        return value
 
     def clear(self):
         """Remove all items in current db.
