@@ -1,4 +1,5 @@
 [![Python version](https://img.shields.io/badge/python-2.7-blue.svg)]()
+[![Python version](https://img.shields.io/badge/python-3.6-blue.svg)]()
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/81816e720b7b48cd8ab217383051dfd5)](https://www.codacy.com/app/meamka/dictator?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=amka/dictator&amp;utm_campaign=Badge_Grade)
 [![Lintly](https://lintly.com/gh/amka/dictator/badge.svg)](https://lintly.com/gh/amka/dictator/)
