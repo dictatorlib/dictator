@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 
-from __future__ import absolute_import
 
 import pytest
 
@@ -16,6 +15,7 @@ def dictator_inst():
     'some-test-value',
     ['1', '2', '3'],
     {'a': 'A', 'b': 'B'},
+    set(['a', 'b', 'c', 'b']),
 ])
 def key_value(request):
     key = 'some-test-key'
