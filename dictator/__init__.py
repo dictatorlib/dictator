@@ -102,6 +102,8 @@ class Dictator(object):
             self._redis.rpush(key, *value)
         elif isinstance(value, dict):
             self._redis.hmset(key, value)
+        elif isinstance(value, set):
+            self._redis.sadd(key, *value)
         else:
             self._redis.set(key, value)
 
