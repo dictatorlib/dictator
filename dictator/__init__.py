@@ -1,6 +1,6 @@
 # coding: utf-8
 """
-Dictator is a tiny library for Robots™ to work with Redis as a Dict.
+Dictator is a tiny library for Robots™ to work with Redis as Python Dict.
 
 Dictator handles Redis command to make work with
 database as a dict-like object.
@@ -71,13 +71,18 @@ class Dictator(object):
         """
         logger.debug('call __getattr__ %s', item)
         key_type = self._redis.type(item)
+
+        # Python3 compatibility
+        if isinstance(key_type, bytes):
+            key_type = key_type.decode()
+
         if key_type == 'hash':
             return self._redis.hgetall(item)
         elif key_type == 'list':
             return self._redis.lrange(item, 0, -1)
         elif key_type == 'set':
             return self._redis.smembers(item)
-        elif key_type == 'zset':
+        elif str(key_type) == 'zset':
             return self._redis.zrange(item, 0, -1)
         else:
             return self._redis.get(item)
