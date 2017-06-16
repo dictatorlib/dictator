@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/amka/dictator.svg?branch=master)](https://travis-ci.org/amka/dictator)
 [![Python version](https://img.shields.io/badge/python-2.7-blue.svg)]()
 [![Python version](https://img.shields.io/badge/python-3.6-blue.svg)]()
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)]()
