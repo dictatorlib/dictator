@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 if __name__ == "__main__":
     setup(
         name='dictator',
-        version='0.1.1',
+        version='0.2.2',
         packages=find_packages(),
         url='https://github.com/amka/dictator',
         license='MIT',
