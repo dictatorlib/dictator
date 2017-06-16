@@ -9,7 +9,8 @@ services:
   - redis-server
 # command to install dependencies
 install:
+  - pip install tox-travis
   - python setup.py install
 # command to run tests
 script: 
-  - python setup.py test
+  - tox
