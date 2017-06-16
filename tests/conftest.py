@@ -11,7 +11,7 @@ def dictator_inst():
     return Dictator(decode_responses=True)
 
 
-@pytest.fixture(params=[
+@pytest.yield_fixture(params=[
     'some-test-value',
     ['1', '2', '3'],
     {'a': 'A', 'b': 'B'},
