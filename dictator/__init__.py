@@ -75,7 +75,7 @@ class Dictator(object):
         # Python3 compatibility
         if isinstance(key_type, bytes):
             key_type = key_type.decode()
-        
+
         logger.debug('trying to get item %s of type %s', item, key_type)
 
         if key_type == 'hash':
