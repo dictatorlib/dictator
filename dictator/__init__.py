@@ -76,6 +76,8 @@ class Dictator(object):
         if isinstance(key_type, bytes):
             key_type = key_type.decode()
 
+        logger.debug('trying to get item %s of type %s', item, key_type)
+
         if key_type == 'hash':
             return self._redis.hgetall(item)
         elif key_type == 'list':
@@ -125,6 +127,7 @@ class Dictator(object):
         :return: True if exists or False in other case
         :rtype: bool
         """
+        logger.debug('call __contains__ %s', item)
         return self._redis.exists(item)
 
     def __len__(self):
@@ -143,6 +146,7 @@ class Dictator(object):
         :return: number of items in db
         :rtype: int
         """
+        logger.debug('call __len__')
         return len(self.keys())
 
     def set(self, key, value):
@@ -182,6 +186,8 @@ class Dictator(object):
         :return: value of given key
         """
         value = self.__getitem__(key) or default
+
+        # Py3 Redis compatibiility
         if isinstance(value, bytes):
             value = value.decode()
         return value
@@ -198,6 +204,7 @@ class Dictator(object):
         0
 
         """
+        logger.debug('call clear')
         self._redis.flushdb()
 
     def pop(self, key, default=None):
@@ -218,6 +225,7 @@ class Dictator(object):
         :return: value associated with given key or None or ``default``
         :rtype: Any
         """
+        logger.debug('call pop %s', key)
         value = self.get(key, default)
         self._redis.delete(key)
         return value
@@ -240,6 +248,7 @@ class Dictator(object):
         :return: list of keys in db
         :rtype: list of str
         """
+        logger.debug('call pop %s', pattern)
         if pattern is None:
             pattern = '*'
 
@@ -256,6 +265,7 @@ class Dictator(object):
 
         :return: list of tuple
         """
+        logger.debug('call items')
         return [(key, self.get(key)) for key in self.keys()]
 
     def values(self):
@@ -271,6 +281,7 @@ class Dictator(object):
 
         :return:
         """
+        logger.debug('call values')
         return [self.get(key) for key in self.keys()]
 
     def iterkeys(self, match=None, count=1):
@@ -296,6 +307,7 @@ class Dictator(object):
         :return: iterator over key.
         :return: iterator
         """
+        logger.debug('call iterkeys %s', match)
         if match is None:
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
@@ -324,6 +336,7 @@ class Dictator(object):
         :return: iterator over key, value pairs.
         :return: iterator
         """
+        logger.debug('call iteritems %s', match)
         if match is None:
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
@@ -351,6 +364,7 @@ class Dictator(object):
         :param other: dict/iterable with .keys() function.
         :param kwargs: key/value pairs
         """
+        logger.debug('call update %s', other)
         if other:
             if hasattr(other, 'keys'):
                 for key in other.keys():
