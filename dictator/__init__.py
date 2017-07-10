@@ -234,9 +234,11 @@ class Dictator(object):
         :rtype: Any
         """
         logger.debug('call pop %s', key)
-        value = self.get(key, default)
+        value = self.get(key)
+        if not value:
+            raise KeyError(key)
         self._redis.delete(key)
-        return value
+        return value or default
 
     def keys(self, pattern=None):
         """Returns a list of keys matching ``pattern``.
