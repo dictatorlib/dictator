@@ -70,6 +70,11 @@ class Dictator(object):
         :return: value of item with given name
         """
         logger.debug('call __getattr__ %s', item)
+
+        # Check whether item exists inside Redis storage or not.
+        if not self.__contains__(item):
+            raise KeyError(item)
+
         key_type = self._redis.type(item)
 
         # Python3 compatibility
@@ -185,12 +190,15 @@ class Dictator(object):
         :type default: Any
         :return: value of given key
         """
-        value = self.__getitem__(key) or default
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            value = None
 
         # Py3 Redis compatibiility
         if isinstance(value, bytes):
             value = value.decode()
-        return value
+        return value or default
 
     def clear(self):
         """Remove all items in current db.
