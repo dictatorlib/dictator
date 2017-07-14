@@ -235,8 +235,6 @@ class Dictator(object):
         """
         logger.debug('call pop %s', key)
         value = self.get(key)
-        if not value:
-            raise KeyError(key)
         self._redis.delete(key)
         return value or default
 
