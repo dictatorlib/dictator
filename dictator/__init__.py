@@ -368,13 +368,13 @@ class Dictator(object):
         >>> type(d)
         dict
         >>> d
-        {'l0': ['1', '2', '1': 'abc'}
+        {'l0': ['1', '2'], '1': 'abc'}
         >>> dc.clear()
 
         :return: Python's dict object
         :rtype: dict
         """
-        logger.debug('call items')
+        logger.debug('call to_dict')
         return {key: self.get(key) for key in self.keys()}
 
     def update(self, other=None, **kwargs):
