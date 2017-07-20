@@ -439,4 +439,3 @@ class Dictator(object):
         """
         logger.debug('call lock %s', name)
         return self._redis.lock(name, *args, **kwargs)
-
