@@ -57,7 +57,8 @@ class Dictator(object):
 
         :param key: key to delete
         :type key: str
-        :return:
+        :return: 1 if deleted, 0 if not
+        :rtype: int
         """
         logger.debug('deleting %s', key)
         return self._redis.delete(key)
@@ -68,6 +69,7 @@ class Dictator(object):
         :param item: item name
         :type item: str
         :return: value of item with given name
+        :rtype: Any
         """
         logger.debug('call __getattr__ %s', item)
 
@@ -100,7 +102,8 @@ class Dictator(object):
         :type key: str
         :param value: item value
         :type value: Any
-        :return:
+        :return: None
+        :rtype: None
         """
         logger.debug('call __setattr__ %s', key)
         if isinstance(value, (tuple, list)):
@@ -164,11 +167,16 @@ class Dictator(object):
         >>> dc.set('l0', ['abc', 123])
         >>> dc['l0']
         ['abc', '123']
+        >>> dc.set([1, 2, 3], ['a', 'b'])
+        >>> dc['[1, 2, 3]']
+        ['a', 'b']
         >>> dc.clear()
 
-        :param key: hashable value
-        :param value:
-        :return:
+        :param key: any value (will be converted to string in Redis)
+        :type key: Any
+        :param value: Any
+        :return: None
+        :rtype None
         """
         self.__setitem__(key, value)
 
@@ -189,6 +197,7 @@ class Dictator(object):
         :param default: value of any type to return of key doesn't exist.
         :type default: Any
         :return: value of given key
+        :rtype: Any
         """
         try:
             value = self.__getitem__(key)
@@ -259,7 +268,6 @@ class Dictator(object):
         logger.debug('call pop %s', pattern)
         if pattern is None:
             pattern = '*'
-
         return self._redis.keys(pattern=pattern)
 
     def items(self):
@@ -271,7 +279,8 @@ class Dictator(object):
         [('l0', ['1', '2', '3', '4'])]
         >>> dc.clear()
 
-        :return: list of tuple
+        :return: list of (key, value) pairs
+        :rtype: list of tuple
         """
         logger.debug('call items')
         return [(key, self.get(key)) for key in self.keys()]
@@ -286,8 +295,7 @@ class Dictator(object):
         >>> dc.clear()
 
         :return: list of tuple
-
-        :return:
+        :rtype: list
         """
         logger.debug('call values')
         return [self.get(key) for key in self.keys()]
@@ -313,7 +321,7 @@ class Dictator(object):
         :param count: minimum number of returns
         :type count: int
         :return: iterator over key.
-        :return: iterator
+        :rtype: generator
         """
         logger.debug('call iterkeys %s', match)
         if match is None:
@@ -342,13 +350,32 @@ class Dictator(object):
         :param count: minimum number of returns
         :type count: int
         :return: iterator over key, value pairs.
-        :return: iterator
+        :rtype: generator
         """
         logger.debug('call iteritems %s', match)
         if match is None:
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
             yield key, self.get(key)
+
+    def to_dict(self):
+        """Convert ``Dictator`` to standard ``dict`` object
+
+        >>> dc = Dictator()
+        >>> dc['l0'] = [1, 2]
+        >>> dc['1'] = 'abc'
+        >>> d = dc.to_dict()
+        >>> type(d)
+        dict
+        >>> d
+        {'l0': ['1', '2', '1': 'abc'}
+        >>> dc.clear()
+
+        :return: Python's dict object
+        :rtype: dict
+        """
+        logger.debug('call items')
+        return {key: self.get(key) for key in self.keys()}
 
     def update(self, other=None, **kwargs):
         """D.update([other, ]**kwargs) -> None.
@@ -384,3 +411,32 @@ class Dictator(object):
         if kwargs:
             for key, value in six.iteritems(kwargs):
                 self.set(key, value)
+
+    def lock(self, name, *args, **kwargs):
+        """Return a new Lock object using key ``name`` that mimics
+        the behavior of threading.Lock.
+        All possible args and kwargs can be found here:
+        `https://redis-py.readthedocs.io/en/latest/#redis.StrictRedis.lock`
+
+        >>> dc = Dictator()
+        >>> dc['1'] = 'abc'
+        >>> dc['2'] = 'def'
+        >>> dc.keys()
+        ['1', '2']
+        >>> lock = dc.lock('Lock')
+        >>> lock.acquire()
+        >>> dc.keys()
+        ['Lock', '1', '2']
+        >>> lock.release()
+        ['1', '2']
+        >>> dc.clear()
+
+        :param name: key used for locking
+        :param args: args for redis-py lock()
+        :param kwargs: kwargs for redis-py lock()
+        :return: Lock objects
+        :rtype: redis.lock.Lock
+        """
+        logger.debug('call lock %s', name)
+        return self._redis.lock(name, *args, **kwargs)
+
