@@ -157,6 +157,31 @@ class Dictator(object):
         logger.debug('call __len__')
         return len(self.keys())
 
+    def copy(self):
+        """Convert ``Dictator`` to standard ``dict`` object
+
+        >>> dc = Dictator()
+        >>> dc['l0'] = [1, 2]
+        >>> dc['1'] = 'abc'
+        >>> d = dc.copy()
+        >>> type(d)
+        dict
+        >>> d
+        {'l0': ['1', '2'], '1': 'abc'}
+        >>> dc.clear()
+
+        :return: Python's dict object
+        :rtype: dict
+        """
+        logger.debug('call to_dict')
+        return {key: self.get(key) for key in self.keys()}
+
+    def __deepcopy__(self, memo):
+        """Convert ``Dictator`` to standard ``dict`` object
+        by simply calling ``copy()`` method.
+        """
+        return self.copy()
+
     def set(self, key, value):
         """Set the value at key ``key`` to ``value``
 
@@ -358,25 +383,6 @@ class Dictator(object):
         for key in self._redis.scan_iter(match=match, count=count):
             yield key, self.get(key)
 
-    def to_dict(self):
-        """Convert ``Dictator`` to standard ``dict`` object
-
-        >>> dc = Dictator()
-        >>> dc['l0'] = [1, 2]
-        >>> dc['1'] = 'abc'
-        >>> d = dc.to_dict()
-        >>> type(d)
-        dict
-        >>> d
-        {'l0': ['1', '2'], '1': 'abc'}
-        >>> dc.clear()
-
-        :return: Python's dict object
-        :rtype: dict
-        """
-        logger.debug('call to_dict')
-        return {key: self.get(key) for key in self.keys()}
-
     def update(self, other=None, **kwargs):
         """D.update([other, ]**kwargs) -> None.
         Update D From dict/iterable ``other`` and ``kwargs``.
@@ -439,3 +445,5 @@ class Dictator(object):
         """
         logger.debug('call lock %s', name)
         return self._redis.lock(name, *args, **kwargs)
+
+    __copy__ = copy
