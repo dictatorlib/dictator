@@ -418,11 +418,9 @@ class Dictator(object):
             for key, value in six.iteritems(kwargs):
                 self.set(key, value)
 
-    def lock(self, name, *args, **kwargs):
-        """Return a new Lock object using key ``name`` that mimics
-        the behavior of threading.Lock.
-        All possible args and kwargs can be found here:
-        `https://redis-py.readthedocs.io/en/latest/#redis.StrictRedis.lock`
+    def __getattr__(self, item):
+        """If some attribute is not defined for ``Dictator``,
+        try to find this method in ``redis-py`` instance
 
         >>> dc = Dictator()
         >>> dc['1'] = 'abc'
@@ -435,15 +433,21 @@ class Dictator(object):
         ['Lock', '1', '2']
         >>> lock.release()
         ['1', '2']
+        >>> dc.unknown_attr()
+        Traceback (most recent call last):
+        ...
+        AttributeError: 'Dictator' object has no attribute 'count'
         >>> dc.clear()
 
-        :param name: key used for locking
-        :param args: args for redis-py lock()
-        :param kwargs: kwargs for redis-py lock()
-        :return: Lock objects
-        :rtype: redis.lock.Lock
+        :param item: item to try to get from ``redis-py`` instance
+        :return: method or variable's value
+        :rtype: Any
         """
-        logger.debug('call lock %s', name)
-        return self._redis.lock(name, *args, **kwargs)
+        if hasattr(self._redis, item):
+            return getattr(self._redis, item)
+        else:
+            raise AttributeError(
+                '\'Dictator\' object has no attribute \'{}\''.format(item)
+            )
 
     __copy__ = copy
