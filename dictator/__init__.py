@@ -155,7 +155,7 @@ class Dictator(object):
         :rtype: int
         """
         logger.debug('call __len__')
-        return len(self.keys())
+        return self._redis.dbsize()
 
     def copy(self):
         """Convert ``Dictator`` to standard ``dict`` object
