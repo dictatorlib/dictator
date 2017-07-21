@@ -90,7 +90,7 @@ For the moment it handles not all features of Python Dict but basics:
     [('Planets', ['Mercury', 'Venus', 'Earth'])]
     ```
 
-* `.len()`
+* `len()`
 
     ```python
     >>> len(dc)
