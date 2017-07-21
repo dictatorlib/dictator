@@ -100,35 +100,35 @@ For the moment it handles not all features of Python Dict but basics:
 
     * Manually acquire-release:
     
-    ```python
+	    ```python
         >>> lock = dc.lock('foo')
         >>> lock.acquire()
         >>> dc.get('foo')
         '776bf70c6de811e799f6c4b301cdb05d'
         >>> lock.release()
         >>> dc.get('foo')
-    ```
+    	```
 
     * With context manager:
 
-    ```python
-        >>> with dc.lock('foo'):
-        >>>    print(dc.get('foo'))
-        '776bf70c6de811e799f6c4b301cdb05d'
-        >>> dc.get('foo'))
-    ```
+		```python
+		>>> with dc.lock('foo'):
+		>>>    print(dc.get('foo'))
+		'776bf70c6de811e799f6c4b301cdb05d'
+		>>> dc.get('foo'))
+		```
 
 * a copy of a `Dictator` object will be Python's standard `dict`:
 
     ```python
-        >>> from copy import copy, deepcopy
-        >>> d = dc.copy()
-        >>> d
-        {'Planets': ['Mercury', 'Venus', 'Earth']}
-        >>> type(d)
-        dict
-        >>> copy(dc) == deepcopy(dc) == dc.copy()
-        True
+	>>> from copy import copy, deepcopy
+	>>> d = dc.copy()
+	>>> d
+	{'Planets': ['Mercury', 'Venus', 'Earth']}
+	>>> type(d)
+	dict
+	>>> copy(dc) == deepcopy(dc) == dc.copy()
+	True
     ```
     
 * and more 
