@@ -98,7 +98,7 @@ For the moment it handles not all features of Python Dict but basics:
     * `.itervalues()`
     * `.iteritems()`
 
-* `lock(name, timeout=None, sleep=0.1, blocking_timeout=None, lock_class=None, thread_local=True)` will return `redis-py`'s `Lock` object.
+* `.lock(name, timeout=None, sleep=0.1, blocking_timeout=None, lock_class=None, thread_local=True)` will return `redis-py`'s `Lock` object.
 
     * Manually acquire-release:
     ```python
