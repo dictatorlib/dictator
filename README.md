@@ -114,7 +114,6 @@ For the moment it handles not all features of Python Dict but basics:
     dict
     >>> copy(dc) == deepcopy(dc) == dc.copy()
     True
-    ```
 
 * plus all methods of [redis-py](https://redis-py.readthedocs.io/en/latest/#redis.Redis) `Redis` instance 
 can be applied to an instance of `Dictator`
