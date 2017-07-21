@@ -101,6 +101,7 @@ For the moment it handles not all features of Python Dict but basics:
 * `.lock(name, timeout=None, sleep=0.1, blocking_timeout=None, lock_class=None, thread_local=True)` will return `redis-py`'s `Lock` object.
 
     * Manually acquire-release:
+    
     ```python
         >>> lock = dc.lock('foo')
         >>> lock.acquire()
@@ -111,6 +112,7 @@ For the moment it handles not all features of Python Dict but basics:
     ```
 
     * With context manager:
+
     ```python
         >>> with dc.lock('foo'):
         >>>    print(dc.get('foo'))
