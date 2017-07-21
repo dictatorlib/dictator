@@ -25,6 +25,8 @@ It's easy to start by creating `Dictator` object
 >>> dc = Dictator(host='localhost', port=6379, db=0)
 ```
 
+> For Python 3 it's useful to add `decode_responses=True` to constructor to get normal `str` instead of `bytes`.
+
 For the moment it handles not all features of Python Dict but basics:
 
 * `.set(key, value)`
@@ -66,12 +68,8 @@ For the moment it handles not all features of Python Dict but basics:
     
     ```
     
-* `.delete(key)`
+* delete key from Dictator
 
-    ```python
-    >>> dc.delete('Comets')
-    ```
-    or
     ```python
     >>> del dc['Comets']
     ```
