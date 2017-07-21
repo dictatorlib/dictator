@@ -57,7 +57,8 @@ class Dictator(object):
 
         :param key: key to delete
         :type key: str
-        :return:
+        :return: 1 if deleted, 0 if not
+        :rtype: int
         """
         logger.debug('deleting %s', key)
         return self._redis.delete(key)
@@ -68,13 +69,21 @@ class Dictator(object):
         :param item: item name
         :type item: str
         :return: value of item with given name
+        :rtype: Any
         """
         logger.debug('call __getattr__ %s', item)
+
+        # Check whether item exists inside Redis storage or not.
+        if not self.__contains__(item):
+            raise KeyError(item)
+
         key_type = self._redis.type(item)
 
         # Python3 compatibility
         if isinstance(key_type, bytes):
             key_type = key_type.decode()
+
+        logger.debug('trying to get item %s of type %s', item, key_type)
 
         if key_type == 'hash':
             return self._redis.hgetall(item)
@@ -93,7 +102,8 @@ class Dictator(object):
         :type key: str
         :param value: item value
         :type value: Any
-        :return:
+        :return: None
+        :rtype: None
         """
         logger.debug('call __setattr__ %s', key)
         if isinstance(value, (tuple, list)):
@@ -125,6 +135,7 @@ class Dictator(object):
         :return: True if exists or False in other case
         :rtype: bool
         """
+        logger.debug('call __contains__ %s', item)
         return self._redis.exists(item)
 
     def __len__(self):
@@ -143,7 +154,33 @@ class Dictator(object):
         :return: number of items in db
         :rtype: int
         """
-        return len(self.keys())
+        logger.debug('call __len__')
+        return self._redis.dbsize()
+
+    def copy(self):
+        """Convert ``Dictator`` to standard ``dict`` object
+
+        >>> dc = Dictator()
+        >>> dc['l0'] = [1, 2]
+        >>> dc['1'] = 'abc'
+        >>> d = dc.copy()
+        >>> type(d)
+        dict
+        >>> d
+        {'l0': ['1', '2'], '1': 'abc'}
+        >>> dc.clear()
+
+        :return: Python's dict object
+        :rtype: dict
+        """
+        logger.debug('call to_dict')
+        return {key: self.get(key) for key in self.keys()}
+
+    def __deepcopy__(self, memo):
+        """Convert ``Dictator`` to standard ``dict`` object
+        by simply calling ``copy()`` method.
+        """
+        return self.copy()
 
     def set(self, key, value):
         """Set the value at key ``key`` to ``value``
@@ -155,11 +192,16 @@ class Dictator(object):
         >>> dc.set('l0', ['abc', 123])
         >>> dc['l0']
         ['abc', '123']
+        >>> dc.set([1, 2, 3], ['a', 'b'])
+        >>> dc['[1, 2, 3]']
+        ['a', 'b']
         >>> dc.clear()
 
-        :param key: hashable value
-        :param value:
-        :return:
+        :param key: any value (will be converted to string in Redis)
+        :type key: Any
+        :param value: Any
+        :return: None
+        :rtype None
         """
         self.__setitem__(key, value)
 
@@ -180,11 +222,17 @@ class Dictator(object):
         :param default: value of any type to return of key doesn't exist.
         :type default: Any
         :return: value of given key
+        :rtype: Any
         """
-        value = self.__getitem__(key) or default
+        try:
+            value = self.__getitem__(key)
+        except KeyError:
+            value = None
+
+        # Py3 Redis compatibiility
         if isinstance(value, bytes):
             value = value.decode()
-        return value
+        return value or default
 
     def clear(self):
         """Remove all items in current db.
@@ -198,6 +246,7 @@ class Dictator(object):
         0
 
         """
+        logger.debug('call clear')
         self._redis.flushdb()
 
     def pop(self, key, default=None):
@@ -218,9 +267,10 @@ class Dictator(object):
         :return: value associated with given key or None or ``default``
         :rtype: Any
         """
-        value = self.get(key, default)
+        logger.debug('call pop %s', key)
+        value = self.get(key)
         self._redis.delete(key)
-        return value
+        return value or default
 
     def keys(self, pattern=None):
         """Returns a list of keys matching ``pattern``.
@@ -240,9 +290,9 @@ class Dictator(object):
         :return: list of keys in db
         :rtype: list of str
         """
+        logger.debug('call pop %s', pattern)
         if pattern is None:
             pattern = '*'
-
         return self._redis.keys(pattern=pattern)
 
     def items(self):
@@ -254,8 +304,10 @@ class Dictator(object):
         [('l0', ['1', '2', '3', '4'])]
         >>> dc.clear()
 
-        :return: list of tuple
+        :return: list of (key, value) pairs
+        :rtype: list of tuple
         """
+        logger.debug('call items')
         return [(key, self.get(key)) for key in self.keys()]
 
     def values(self):
@@ -268,9 +320,9 @@ class Dictator(object):
         >>> dc.clear()
 
         :return: list of tuple
-
-        :return:
+        :rtype: list
         """
+        logger.debug('call values')
         return [self.get(key) for key in self.keys()]
 
     def iterkeys(self, match=None, count=1):
@@ -294,8 +346,9 @@ class Dictator(object):
         :param count: minimum number of returns
         :type count: int
         :return: iterator over key.
-        :return: iterator
+        :rtype: generator
         """
+        logger.debug('call iterkeys %s', match)
         if match is None:
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
@@ -322,8 +375,9 @@ class Dictator(object):
         :param count: minimum number of returns
         :type count: int
         :return: iterator over key, value pairs.
-        :return: iterator
+        :rtype: generator
         """
+        logger.debug('call iteritems %s', match)
         if match is None:
             match = '*'
         for key in self._redis.scan_iter(match=match, count=count):
@@ -351,6 +405,7 @@ class Dictator(object):
         :param other: dict/iterable with .keys() function.
         :param kwargs: key/value pairs
         """
+        logger.debug('call update %s', other)
         if other:
             if hasattr(other, 'keys'):
                 for key in other.keys():
@@ -362,3 +417,33 @@ class Dictator(object):
         if kwargs:
             for key, value in six.iteritems(kwargs):
                 self.set(key, value)
+
+    def lock(self, name, *args, **kwargs):
+        """Return a new Lock object using key ``name`` that mimics
+        the behavior of threading.Lock.
+        All possible args and kwargs can be found here:
+        `https://redis-py.readthedocs.io/en/latest/#redis.StrictRedis.lock`
+
+        >>> dc = Dictator()
+        >>> dc['1'] = 'abc'
+        >>> dc['2'] = 'def'
+        >>> dc.keys()
+        ['1', '2']
+        >>> lock = dc.lock('Lock')
+        >>> lock.acquire()
+        >>> dc.keys()
+        ['Lock', '1', '2']
+        >>> lock.release()
+        ['1', '2']
+        >>> dc.clear()
+
+        :param name: key used for locking
+        :param args: args for redis-py lock()
+        :param kwargs: kwargs for redis-py lock()
+        :return: Lock objects
+        :rtype: redis.lock.Lock
+        """
+        logger.debug('call lock %s', name)
+        return self._redis.lock(name, *args, **kwargs)
+
+    __copy__ = copy
